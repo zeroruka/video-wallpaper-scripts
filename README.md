@@ -1,6 +1,6 @@
 # Video Wallpaper Scripts
 
-Some scripts to make setting a video as your wallpaper on linux easier.
+Some scripts to make setting a video as your wallpaper on linux easier. This is only tested working on arch with tiling WMs.
 
 ##### Change wallpaper quickly using setwall script
 
