@@ -37,17 +37,18 @@ fi
 # If configDir/config.ini does not exist, create it and initialise it
 if [ ! -f "$configDir"/config.ini ] || [ $rewriteSteamPath ]; then
     mkdir -p "$configDir"
+    touch "$configDir"/config.ini
 
     printf "Enter your Steam library directory, or ""NA"" if you do not have Wallpaper Engine\n"
     printf "Example: If your steam library is located at /home/user/Steam, then type /home/user\n"
     printf "Steam library: "
     read steamPath
+
     # initialise config.ini with default values
     if ! grep -q "\[Settings\]" "$configDir"/config.ini || [ "$steamPath" = "NA" ]; then
         if [ -f "$configDir"/config.ini ]; then
             rm "$configDir"/config.ini
         fi
-        touch "$configDir"/config.ini
         echo "[Settings]" >>"$configDir"/config.ini
         echo "steamPath=NA" >>"$configDir"/config.ini
         echo "WallpaperEngine=false" >>"$configDir"/config.ini
@@ -177,7 +178,7 @@ else
         exit 1
     else
         printf "${RED}Non-wallpaper engine mode, only deleting and optimizing will work${NC}\n"
-        printf "${RED}Reset your steam path using 'movewall -s' to enable previewing${NC}\n"
+        printf "${RED}Reset your steam path using 'movewall -s' to enable previewing/adding wallpapers${NC}\n"
         exit 1
     fi
 fi
