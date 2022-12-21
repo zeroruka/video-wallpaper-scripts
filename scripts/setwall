@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Use xwinwrap-baitinq-git from AUR
+
+var=$(cat $HOME/.config/video-wallpapers/wallpaperVar)
+wallpapernum=$(ls $HOME/.config/video-wallpapers/wallpapers | wc -l)
+new=$(($var + 1))                                 # Increment the wallpaper number
+screenRes=$(xrandr | grep '*' | awk '{print $1}') # Get screen resolution
+
+if [[ $var -ge $wallpapernum ]]; then
+    echo 1 >$HOME/.config/video-wallpapers/wallpaperVar
+else
+    echo $new >$HOME/.config/video-wallpapers/wallpaperVar
+fi
+
+pkill -9 mplayer
+
+xwinwrap -g $screenRes+0+0 -ov -un -s -ni -nf -debug -r -- mplayer -wid WID -quiet -nosound $HOME/.config/video-wallpapers/wallpapers/$var.mp4 -loop 0 -nolirc -nomouseinput >/dev/null & # set the background

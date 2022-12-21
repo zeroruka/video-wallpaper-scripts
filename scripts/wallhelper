@@ -1,0 +1,176 @@
+#!/bin/sh
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+configDir=$HOME/.config/video-wallpapers
+var=$(ls -1 "$configDir"/wallpapers | wc -l)
+wallpaperNum=$(($var + 1))
+screenRes=$(xrandr | grep '*' | awk '{print $1}') # Get screen resolution
+screenRes=$(echo $screenRes | sed 's/x/:/g')
+
+# if -h is passed, it will print help
+if [ "$1" = "-h" ]; then
+    printf "Usage: movewall [OPTION]\n"
+    printf "Moves wallpapers from Wallpaper Engine to "$configDir"/wallpapers\n\n"
+
+    printf "Options:\n"
+    printf "  -h,            print this help\n"
+    printf "  -d [number],   deletes the wallpaper from "$configDir"/wallpapers\n"
+    printf "  -p [id],       preview the wallpaper\n"
+    printf "  -o,            optimize the latest wallpaper using ffmpeg\n"
+    printf "  -s,            set wallpaper engine path\n\n"
+
+    printf "Examples:\n"
+    printf "  movewall -d 1,      deletes the wallpaper named 1.mp4\n"
+    printf "  movewall 177013,    moves the wallpaper with id 177013 to "$configDir"/wallpapers\n"
+    printf "  movewall -p 177013, preview the wallpaper with id 177013\n"
+    printf "  movewall,           moves the wallpaper with id in clipboard to "$configDir"/wallpapers\n"
+    exit 0
+fi
+
+if [ "$1" = "-s" ]; then
+    rewriteSteamPath=true
+fi
+
+# If configDir/config.ini does not exist, create it and initialise it
+if [ ! -f "$configDir"/config.ini ] || [ $rewriteSteamPath ]; then
+    mkdir -p configDir
+
+    printf "Enter your Steam library directory, or ""NA"" if you do not have Wallpaper Engine\n"
+    printf "Example: If your steam library is located at /home/user/Steam, then type /home/user\n"
+    printf "Steam library: "
+    read steamPath
+    # initialise config.ini with default values
+    if ! grep -q "\[Settings\]" "$configDir"/config.ini || [ "$steamPath" = "NA" ]; then
+        if [ -f "$configDir"/config.ini ]; then
+            rm "$configDir"/config.ini
+        fi
+        touch configDir/config.ini
+        echo "[Settings]" >>"$configDir"/config.ini
+        echo "steamPath=NA" >>"$configDir"/config.ini
+        echo "WallpaperEngine=false" >>"$configDir"/config.ini
+    fi
+    if [ -z "$steamPath" ]; then
+        printf "\n${RED}Invalid path\n"
+        exit 1
+    fi
+    if [ "$steamPath" = "NA" ]; then
+        printf "Using in non-wallpaper engine mode, only deleting and optimizing will work\n"
+        exit 0
+    fi
+    if [ ! -d "$steamPath/Steam" ]; then
+        printf "\n${RED}Steam folder not found\n"
+        exit 1
+    fi
+    if [ ! -d "$steamPath/Steam/steamapps/workshop/content/431960" ]; then
+        printf "\n${RED}Wallpaper Engine workshop folder not found, did you install Wallpaper Engine?\n"
+        exit 1
+    fi
+    # set wallpaperEngine and steampath in config.ini
+    sed -i 's/WallpaperEngine=false/WallpaperEngine=true/g' "$configDir"/config.ini
+    sed -i "s|steamPath=NA|steamPath=$steamPath|g" "$configDir"/config.ini
+    printf "\n${GREEN}Wallpaper Engine detected!\n"
+    exit 0
+fi
+
+steamPath=$(grep -oP '(?<=steamPath=).+' "$configDir"/config.ini)
+wallpaperEngine=$(grep -oP '(?<=WallpaperEngine=).+' "$configDir"/config.ini)
+clipboard=$(xclip -selection c -o | sed 's/[^0-9]//g') # get the id from clipboard
+
+# if -d is given as an argument, then the script will delete the mp4 from "$configDir"/wallpapers
+if [ "$1" = "-d" ]; then
+    if [ -z "$2" ]; then # if no id is given as an argument, use default $var
+        if [ -f "$configDir"/wallpapers/$var.mp4 ]; then
+            rm "$configDir"/wallpapers/$var.mp4
+            printf "${GREEN}Deleted latest wallpaper\n"
+            exit 0
+        else
+            printf "${RED}No wallpaper to delete\n"
+            exit 1
+        fi
+    else
+        if [ -f "$configDir"/wallpapers/$2.mp4 ]; then
+            rm "$configDir"/wallpapers/$2.mp4
+            printf "${GREEN}Deleted wallpaper $2\n"
+            for ((i = $2; i < $var; i++)); do
+                mv "$configDir"/wallpapers/$((i + 1)).mp4 "$configDir"/wallpapers/$i.mp4
+            done
+            exit 0
+        else
+            printf "${RED}Wallpaper $2 does not exist\n"
+            exit 1
+        fi
+    fi
+fi
+
+# if -o is given as an argument, then the script will optimize the latest wallpaper using ffmpeg
+if [ "$1" = "-o" ]; then
+    # Optimize latest wallpaper using ffmpeg
+    if [ -f "$configDir"/wallpapers/$var.mp4 ]; then
+        ffmpeg -i "$configDir"/wallpapers/$var.mp4 -vf scale=$screenRes -crf 20 -c:a copy "$configDir"/wallpapers/temp.mp4
+        rm "$configDir"/wallpapers/$var.mp4
+        mv "$configDir"/wallpapers/temp.mp4 "$configDir"/wallpapers/$var.mp4
+        printf "${GREEN}Optimized latest wallpaper\n"
+        exit 0
+    else
+        printf "${RED}No wallpaper to optimize\n"
+        exit 1
+    fi
+fi
+
+if [ "$wallpaperEngine" = "true" ]; then
+    # if -p is given as an argument, then the script will open the mp4 in vlc as preview
+    if [ "$1" = "-p" ]; then
+        id=$2
+        if [ -z "$id" ]; then # if no id is given as an argument, use the clipboard value
+            id=$clipboard
+        fi
+
+        if [ -f $steamPath/Steam/steamapps/workshop/content/431960/$id/*.mp4 ]; then
+            mplayer $steamPath/Steam/steamapps/workshop/content/431960/$id/*.mp4 >/dev/null 2>&1 &
+            printf "${GREEN}Previewing wallpaper $id\n"
+            exit 0
+        else
+            printf "${RED}No wallpaper found\n"
+            exit 1
+        fi
+    fi
+
+    # if no arguments are given, then the script will move the mp4 from the clipboard id to "$configDir"/wallpapers
+    if [ -z "$1" ] || [ "$1" -eq "$1" ] 2>/dev/null; then
+        id=$1
+        if [ -z "$id" ]; then
+            if [ -z "$clipboard" ]; then
+                printf "${RED}No id given and clipboard is empty\n"
+                exit 1
+            fi
+            id=$clipboard
+        fi
+
+        if [ -d $steamPath/Steam/steamapps/workshop/content/431960/$id ]; then
+            cp $steamPath/Steam/steamapps/workshop/content/431960/$id/*.mp4 "$configDir"/wallpapers/$wallpaperNum.mp4
+            printf "${GREEN}Success!\n"
+            exit 0
+        else
+            printf "${RED}Directory does not exist!\n"
+            exit 1
+        fi
+    fi
+    if [ "$1" != "-h" ] && [ "$1" != "-d" ] && [ "$1" != "-p" ] && [ "$1" != "-o" ] && [ -n "$1" ] && [ "$1" != "-s" ]; then
+        printf "${RED}Invalid arguments\n"
+        printf "Use -h for help\n"
+        exit 1
+    fi
+else
+    if [ "$1" != "-h" ] && [ "$1" != "-d" ] && [ "$1" != "-p" ] && [ "$1" != "-o" ] && [ -n "$1" ] && [ "$1" != "-s" ]; then
+        printf "${RED}Invalid arguments\n"
+        printf "Use -h for help\n"
+        exit 1
+    else
+        printf "${RED}Non-wallpaper engine mode, only deleting and optimizing will work\n"
+        printf "${RED}Reset your steam path using 'movewall -s' to enable previewing\n"
+        exit 1
+    fi
+fi
