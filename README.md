@@ -15,6 +15,7 @@ Some scripts to make setting a video as your wallpaper on linux easier.
 - [xwinwrap-baitinq-git](https://aur.archlinux.org/packages/xwinwrap-baitinq-git/) (AUR)
 - mplayer
 - ffmpeg
+- vlc (optional)
 - Wallpaper Engine (optional but recommended)
 
 ## Installation
