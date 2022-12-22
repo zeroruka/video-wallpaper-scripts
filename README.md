@@ -1,8 +1,21 @@
 # Video Wallpaper Scripts
 
-Some scripts to make setting a video/gif as your wallpaper on linux easier.
+Some scripts to make setting a video/gif as your wallpaper on linux easier. Supports Wayland and Xorg.
 
-This is only tested working on arch with tiling WMs (dwm, qtile, i3, xmonad, herbstluft, awesome)
+Tested working on Arch with:
+
+- Gnome
+- Xfce
+- Cinnamon (works with desktop icons)
+- KDE (recommend to use [this](https://github.com/catsout/wallpaper-engine-kde-plugin) instead)
+- Mate
+- Xmonad
+- Qtile
+- i3
+- Herbstluftwm
+- Awesome
+
+Not tested on other distros and BSPWM
 
 ##### Change wallpaper quickly using setwall script
 

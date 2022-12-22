@@ -15,7 +15,7 @@ fi
 # if current shell is gnome or kde or xfce or mate or cinnamon, set args=$(-fs -ni -nf -b -un -fdt)
 # else set args=$(-fs -ni -nf -b -un -ov -fdt)
 
-if [[ $(echo $XDG_SESSION_DESKTOP | grep -Eo 'gnome|kde|cinnamon|mate|xfce') ]]; then
+if [[ $(echo $XDG_SESSION_DESKTOP | grep -Eo 'gnome|cinnamon|herbstluftwm') ]]; then
     args="-fs -ni -nf -b -un -fdt"
 else
     args="-fs -ni -nf -b -un -ov -fdt"
