@@ -6,10 +6,18 @@ var=$(cat $HOME/.config/video-wallpapers/wallpaperVar)
 wallpapernum=$(ls $HOME/.config/video-wallpapers/wallpapers | wc -l)
 new=$(($var + 1)) # Increment the wallpaper number
 
-if [[ $var -ge $wallpapernum ]]; then
-    echo 1 >$HOME/.config/video-wallpapers/wallpaperVar
+if [[ $1 != "startup" ]]; then
+    # If the script is not called on startup, then increment the wallpaper number
+    if [[ $var -ge $wallpapernum ]]; then
+        echo 1 >$HOME/.config/video-wallpapers/wallpaperVar
+    else
+        echo $new >$HOME/.config/video-wallpapers/wallpaperVar
+    fi
 else
-    echo $new >$HOME/.config/video-wallpapers/wallpaperVar
+    var=$(($var - 1))
+    if [ $var -eq 0 ]; then
+        var=$wallpapernum
+    fi
 fi
 
 # if current shell is gnome or kde or xfce or mate or cinnamon, set args=$(-fs -ni -nf -b -un -fdt)

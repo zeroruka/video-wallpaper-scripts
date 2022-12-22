@@ -152,15 +152,21 @@ It is recommended to use this script with a keybind. (e.g. Super+Alt+W)
 
 # Autostart
 
-Add the following to your xprofile to autostart video wallpaper:
+Either add the following to your xprofile:
 
 ```sh
-var=$(cat $HOME/.config/video-wallpapers/wallpaperVar)
-newvar=$((var - 1))
-if [ $newvar -eq 0 ]; then
-    newvar=$(ls $HOME/.config/video-wallpapers/wallpapers | wc -l)
-fi
-xwinwrap -fs -ni -nf -b -un -ov -- mplayer -wid %WID -quiet -nosound $HOME/.config/video-wallpapers/wallpapers/$newvar.mp4 -loop 0 -nolirc -nomouseinput & # set the background
+$HOME/.config/video-wallpapers/setwall startup
+```
+
+Or make a .desktop file in `~/.config/autostart/` with the following content:
+
+```ini
+[Desktop Entry]
+Type=Application
+Name=setwall
+Exec=$HOME/.config/video-wallpapers/setwall startup
+X-GNOME-Autostart-enabled=true
+Comment=Script to set wallpaper
 ```
 
 ---

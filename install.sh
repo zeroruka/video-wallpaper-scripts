@@ -19,6 +19,20 @@ if [ -f $HOME/.config/video-wallpapers/wallhelper ]; then
     exit 0
 fi
 
+# Check if xwinwrap-git is installed
+if ! [ -x "$(command -v xwinwrap)" ]; then
+    echo "xwinwrap-git is not installed"
+    echo "You must install xwinwrap to use these scripts"
+    exit 1
+fi
+
+# Check if mplayer is installed
+if ! [ -x "$(command -v mplayer)" ]; then
+    echo "mplayer is not installed"
+    echo "You must install mplayer to use these scripts"
+    exit 1
+fi
+
 # create the config directory
 mkdir -p $HOME/.config/video-wallpapers
 cp scripts/* $HOME/.config/video-wallpapers/
