@@ -46,7 +46,7 @@ Not tested on other distros and BSPWM
 
 ## Wallhelper script
 
-This script is meant to be used together with wallpaper engine to make things easier when settings a video as your wallpaper.
+This script is meant to be used together with wallpaper engine to make things easier when setting a video as your wallpaper.
 
 It can also add wallpapers manually without wallpaper engine if you specify the path using `wallhelper -a <path_to_mp4/gif>`.
 
