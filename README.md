@@ -30,7 +30,6 @@ Not tested on other distros and BSPWM
 - [xwinwrap-git](https://aur.archlinux.org/packages/xwinwrap-git/) (AUR)
 - mplayer
 - ffmpeg
-- gifview
 - gifsicle
 - xclip
 - vlc (optional)
