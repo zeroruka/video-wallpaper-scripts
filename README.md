@@ -116,7 +116,7 @@ You can:
 
 ![deleting](attachments/deleting.gif)
 
-### Without Wallpaper Engine (Manual wallpaper adding)
+### Without Wallpaper Engine
 
 The script can also be used without wallpaper engine. However, you will only be able to use the optimizing, custom adding and deleting functions of the script.
 
