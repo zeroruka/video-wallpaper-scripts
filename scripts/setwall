@@ -12,18 +12,27 @@ else
     echo $new >$HOME/.config/video-wallpapers/wallpaperVar
 fi
 
+# if current shell is gnome or kde or xfce or mate or cinnamon, set args=$(-fs -ni -nf -b -un -fdt)
+# else set args=$(-fs -ni -nf -b -un -ov -fdt)
+
+if [[ $(echo $XDG_CURRENT_DESKTOP | grep gnome) ]] || [[ $(echo $XDG_CURRENT_DESKTOP | grep kde) ]] || [[ $(echo $XDG_CURRENT_DESKTOP | grep xfce) ]] || [[ $(echo $XDG_CURRENT_DESKTOP | grep mate) ]] || [[ $(echo $XDG_CURRENT_DESKTOP | grep cinnamon) ]]; then
+    args="-fs -ni -nf -b -un -fdt"
+else
+    args="-fs -ni -nf -b -un -ov -fdt"
+fi
+
 pkill -9 mplayer
 pkill -9 gifview
 
 if [[ $(ls $HOME/.config/video-wallpapers/wallpapers | grep $var.mp4) ]]; then
     # Use mplayer to play mp4 if current wallpaper is .mp4
     sleep 0.01
-    xwinwrap -fs -ni -nf -b -un -ov -- mplayer -wid %WID -quiet -nosound $HOME/.config/video-wallpapers/wallpapers/$var.mp4 -loop 0 -nolirc -nomouseinput >/dev/null &
+    xwinwrap $args -- mplayer -wid %WID -quiet -nosound $HOME/.config/video-wallpapers/wallpapers/$var.mp4 -loop 0 -nolirc -nomouseinput >/dev/null &
 else
     if [[ $(ls $HOME/.config/video-wallpapers/wallpapers | grep $var.gif) ]]; then
         # Use gifview to play gif if current wallpaper is .gif
         sleep 0.01
-        xwinwrap -fs -ni -nf -b -un -ov -- gifview -w %WID $HOME/.config/video-wallpapers/wallpapers/$var.gif --geometry 2560x1440 -a >/dev/null &
+        xwinwrap $args -- gifview -w %WID $HOME/.config/video-wallpapers/wallpapers/$var.gif --geometry 2560x1440 -a >/dev/null &
     fi
 fi
 
