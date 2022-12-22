@@ -19,6 +19,7 @@ This is only tested working on arch with tiling WMs (dwm, qtile, i3, xmonad, her
 - ffmpeg
 - gifview
 - gifsicle
+- xclip
 - vlc (optional)
 - [Wallpaper Engine](https://store.steampowered.com/app/431960/Wallpaper_Engine/) (optional but recommended)
 
