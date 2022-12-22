@@ -1,8 +1,8 @@
 # Video Wallpaper Scripts
 
-Some scripts to make setting a video as your wallpaper on linux easier. 
+Some scripts to make setting a video/gif as your wallpaper on linux easier.
 
-This is only tested working on arch with tiling WMs (dwm, qtile, i3, xmonad, herbstluft, awesome).
+This is only tested working on arch with tiling WMs (dwm, qtile, i3, xmonad, herbstluft, awesome)
 
 ##### Change wallpaper quickly using setwall script
 
@@ -14,17 +14,20 @@ This is only tested working on arch with tiling WMs (dwm, qtile, i3, xmonad, her
 
 ## Dependencies
 
-- [xwinwrap-baitinq-git](https://aur.archlinux.org/packages/xwinwrap-baitinq-git/) (AUR)
+- [xwinwrap-git](https://aur.archlinux.org/packages/xwinwrap-git/) (AUR)
 - mplayer
 - ffmpeg
+- gifview
+- gifsicle
 - vlc (optional)
-- Wallpaper Engine (optional but recommended)
+- [Wallpaper Engine](https://store.steampowered.com/app/431960/Wallpaper_Engine/) (optional but recommended)
 
 ## Installation
 
 1. Clone the repository
 2. Make install.sh executable if needed
 3. Run install.sh
+4. Add wallhelper to your path if you want
 
 # Usage
 
@@ -32,7 +35,7 @@ This is only tested working on arch with tiling WMs (dwm, qtile, i3, xmonad, her
 
 This script is meant to be used together with wallpaper engine to make things easier when settings a video as your wallpaper.
 
-It is recommended to symlink this script to your path, so that you can run it from anywhere. (e.g. `ln -s /path/to/wallhelper ~/.local/bin/wallhelper`)
+It can also add wallpapers manually without wallpaper engine if you specify the path using `wallhelper -a <path_to_mp4/gif>`.
 
 ### With Wallpaper Engine
 
@@ -63,13 +66,26 @@ It is recommended to symlink this script to your path, so that you can run it fr
 
 6. The script will now look for the wallpaper in your steam workshop folder and copy it to `~/.config/video-wallpapers/wallpapers/`. You can use setwall script to cycle through the wallpapers in this folder.
 
+If you want to add your own video/gif as a wallpaper, you can use the following command: `wallhelper -a <path_to_mp4/gif>`. This will copy the video/gif to `~/.config/video-wallpapers/wallpapers/`.
+
+The script can also read the video/gif directory from the clipboard if you use `wallhelper -a` or `wallhelper` without any arguments.
+
 #### Optimizing a wallpaper
 
+##### Optimizing the last added wallpaper
+
 1. Run the wallhelper script using the following command: `wallhelper -o`.
-2. This will optimize the last added wallpaper in `~/.config/video-wallpapers/wallpapers/` using ffmpeg.
-3. The wallpaper will be changed to your screen resolution. This will make the wallpaper run smoother and use less resources.
-4. It is recommended to optimize all wallpapers you want to use as your wallpaper.
-5. You can further optimize the wallpapers yourself to remove more stuttering and improve performance.
+2. This will optimize the last added wallpaper in `~/.config/video-wallpapers/wallpapers/` using ffmpeg if it's a mp4 or gifsicle if it's a gif.
+
+##### Batch optimizing
+
+You can:
+
+- Optimize all wallpapers in the wallpaper directory using `wallhelper -o all`
+- Optimize all gifs in the wallpaper directory using `wallhelper -o gif`
+- Optimize all mp4s in the wallpaper directory using `wallhelper -o mp4`
+
+**Gifs must be optimized so that it is at your screen resolution, it will not auto stretch to your screen resolution!**
 
 ##### Unoptimized (4k choppy video)
 
@@ -89,9 +105,17 @@ It is recommended to symlink this script to your path, so that you can run it fr
 
 ### Without Wallpaper Engine (Manual wallpaper adding)
 
-The script can also be used without wallpaper engine. However, you will only be able to use the optimizing and deleting functions of the script. (Maybe i'll improve it in the future)
+The script can also be used without wallpaper engine. However, you will only be able to use the optimizing, custom adding and deleting functions of the script.
 
-To add a wallpaper manually:
+To add a wallpaper without having wallpaper engine:
+
+###### Automatic adding
+
+1. Download a video you want to use as your wallpaper
+2. Use the following command: `wallhelper -a <path_to_mp4/gif>`
+3. Alternatively, you can also use `wallhelper -a` and the script will read the path from the clipboard
+
+###### Manual adding
 
 1. Download a video you want to use as your wallpaper
 2. Move the video to `~/.config/video-wallpapers/wallpapers/`
@@ -103,7 +127,11 @@ Deletion and optimization works the same as with wallpaper engine.
 
 ## Setwall script
 
-This script is used to cycle through wallpapers in `~/.config/video-wallpapers/wallpapers/` and set them as your wallpaper.
+This script is used to cycle through wallpapers in `~/.config/video-wallpapers/wallpapers/` and set them as your wallpaper. It now supports mp4 and gif.
+
+Gif wallpapers are implemented using gifview and mp4 wallpapers are implemented using mplayer. I hope to implement html wallpapers in the future.
+
+Gifs must be optimized so that it is at your screen resolution, it will not auto stretch to your screen resolution!
 
 It is recommended to use this script with a keybind. (e.g. Super+Alt+W)
 
@@ -116,11 +144,10 @@ Add the following to your xprofile to autostart video wallpaper:
 ```sh
 var=$(cat $HOME/.config/video-wallpapers/wallpaperVar)
 newvar=$((var - 1))
-screenRes=$(xrandr | grep '*' | awk '{print $1}')
 if [ $newvar -eq 0 ]; then
     newvar=$(ls $HOME/.config/video-wallpapers/wallpapers | wc -l)
 fi
-xwinwrap -g $screenRes+0+0 -ov -un -s -ni -nf -debug -r -- mplayer -wid WID -quiet -nosound $HOME/.config/video-wallpapers/wallpapers/$newvar.mp4 -loop 0 -nolirc -nomouseinput & # set the background
+xwinwrap -fs -ni -nf -b -un -ov -- mplayer -wid %WID -quiet -nosound $HOME/.config/video-wallpapers/wallpapers/$newvar.mp4 -loop 0 -nolirc -nomouseinput & # set the background
 ```
 
 ---

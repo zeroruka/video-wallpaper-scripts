@@ -1,11 +1,10 @@
 #!/bin/sh
 
-# Use xwinwrap-baitinq-git from AUR
+# Use xwinwrap-git from AUR (https://github.com/takase1121/xwinwrap)
 
 var=$(cat $HOME/.config/video-wallpapers/wallpaperVar)
 wallpapernum=$(ls $HOME/.config/video-wallpapers/wallpapers | wc -l)
-new=$(($var + 1))                                 # Increment the wallpaper number
-screenRes=$(xrandr | grep '*' | awk '{print $1}') # Get screen resolution
+new=$(($var + 1)) # Increment the wallpaper number
 
 if [[ $var -ge $wallpapernum ]]; then
     echo 1 >$HOME/.config/video-wallpapers/wallpaperVar
@@ -14,5 +13,18 @@ else
 fi
 
 pkill -9 mplayer
+pkill -9 gifview
 
-xwinwrap -g $screenRes+0+0 -ov -un -s -ni -nf -debug -r -- mplayer -wid WID -quiet -nosound $HOME/.config/video-wallpapers/wallpapers/$var.mp4 -loop 0 -nolirc -nomouseinput >/dev/null & # set the background
+if [[ $(ls $HOME/.config/video-wallpapers/wallpapers | grep $var.mp4) ]]; then
+    # Use mplayer to play mp4 if current wallpaper is .mp4
+    sleep 0.01
+    xwinwrap -fs -ni -nf -b -un -ov -- mplayer -wid %WID -quiet -nosound $HOME/.config/video-wallpapers/wallpapers/$var.mp4 -loop 0 -nolirc -nomouseinput >/dev/null &
+else
+    if [[ $(ls $HOME/.config/video-wallpapers/wallpapers | grep $var.gif) ]]; then
+        # Use gifview to play gif if current wallpaper is .gif
+        sleep 0.01
+        xwinwrap -fs -ni -nf -b -un -ov -- gifview -w %WID $HOME/.config/video-wallpapers/wallpapers/$var.gif --geometry 2560x1440 -a >/dev/null &
+    fi
+fi
+
+#else if [[ $(ls $HOME/.config/video-wallpapers/wallpapers/$var | grep .html) ]] # implement html wallpaper
