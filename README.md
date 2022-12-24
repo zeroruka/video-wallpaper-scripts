@@ -1,10 +1,10 @@
 # Video Wallpaper Scripts
 
-Some scripts to make setting a video/gif as your wallpaper on linux easier. Supports Wayland and Xorg.
+Some scripts to make setting a video/gif as your wallpaper on linux easier.
 
 Tested working on Arch with:
 
-- Gnome
+- Gnome (supports wayland)
 - Xfce
 - Cinnamon (works with desktop icons)
 - KDE (recommend to use [this](https://github.com/catsout/wallpaper-engine-kde-plugin) instead)
