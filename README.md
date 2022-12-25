@@ -14,6 +14,7 @@ Tested working on Arch with:
 - i3
 - Herbstluftwm
 - Awesome
+- dwm
 
 Not tested on other distros and BSPWM
 
@@ -28,7 +29,7 @@ Not tested on other distros and BSPWM
 ## Dependencies
 
 - [xwinwrap-git](https://aur.archlinux.org/packages/xwinwrap-git/) (AUR)
-- mplayer
+- mplayer/mpv
 - ffmpeg
 - gifsicle
 - xclip
@@ -142,7 +143,11 @@ Deletion and optimization works the same as with wallpaper engine.
 
 This script is used to cycle through wallpapers in `~/.config/video-wallpapers/wallpapers/` and set them as your wallpaper. It now supports mp4 and gif.
 
-Gif wallpapers are implemented using gifview and mp4 wallpapers are implemented using mplayer. I hope to implement html wallpapers in the future.
+If you want to set a specific video/gif in `~/.config/video-wallpapers/wallpapers/` as your wallpaper, add the corresponding number as an argument. (eg. to set 1.mp4 as the wallpaper, run `~/.config/video-wallpapers/setwall 1`)
+
+Gif wallpapers are implemented using gifview and mp4 wallpapers are implemented using mplayer/mpv. I hope to implement html wallpapers in the future.
+
+Change the 'VIDEOPLAYER' variable in the script to change the video player used, default is mplayer. (e.g. mpv, mplayer)
 
 Gifs must be optimized so that it is at your screen resolution, it will not auto stretch to your screen resolution!
 
