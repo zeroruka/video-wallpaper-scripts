@@ -2,6 +2,8 @@
 
 # Use xwinwrap-git from AUR (https://github.com/takase1121/xwinwrap)
 
+VIDEOPLAYER="mplayer" # mplayer or mpv
+
 GREEN='\033[0;32m'
 NC='\033[0m'
 
@@ -34,10 +36,10 @@ fi
 
 function setwall() {
     if [[ $(ls $HOME/.config/video-wallpapers/wallpapers | grep $var.mp4) ]]; then
-        # Use mplayer to play mp4 if current wallpaper is .mp4
+        # Use mplayer/mpv to play mp4 if current wallpaper is .mp4
         sleep 0.01
         printf "$GREEN[INFO]$NC Setting wallpaper to $var.mp4\n"
-        xwinwrap $args -- mplayer -wid %WID -quiet -nosound $HOME/.config/video-wallpapers/wallpapers/$var.mp4 -loop 0 -nolirc -nomouseinput >/dev/null &
+        xwinwrap $args -- $VIDEOPLAYER $videoargs >/dev/null &
     else
         if [[ $(ls $HOME/.config/video-wallpapers/wallpapers | grep $var.gif) ]]; then
             # Use gifview to play gif if current wallpaper is .gif
@@ -48,16 +50,22 @@ function setwall() {
     fi
 }
 
-pkill -9 mplayer
+pkill -9 $VIDEOPLAYER
 pkill -9 gifview
 
 if [[ $1 =~ ^[0-9]+$ ]] && [[ $(ls $HOME/.config/video-wallpapers/wallpapers | grep $1) ]]; then
     var=$1
     printf "$GREEN[MODE]$NC Direct\n"
-    setwall
 else
     printf "$GREEN[MODE]$NC Cycle\n"
-    setwall
 fi
+
+if [[ $VIDEOPLAYER == "mplayer" ]]; then
+    videoargs="-wid %WID -quiet -nosound $HOME/.config/video-wallpapers/wallpapers/$var.mp4 -loop 0 -nolirc -nomouseinput"
+else
+    videoargs="-wid %WID -quiet --no-audio $HOME/.config/video-wallpapers/wallpapers/$var.mp4 -loop"
+fi
+
+setwall
 
 #else if [[ $(ls $HOME/.config/video-wallpapers/wallpapers/$var | grep .html) ]] # implement html wallpaper
